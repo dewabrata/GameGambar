@@ -27,7 +27,7 @@ public class TotalActivity extends AppCompatActivity {
 
     TextView point;
     Button finish, ulang;
-    ArrayList<String> stock = new ArrayList<>();
+    int stock;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,10 +40,11 @@ public class TotalActivity extends AppCompatActivity {
 
 
         Intent arr = getIntent();
-        stock = arr.getStringArrayListExtra("total");
+        stock = arr.getIntExtra("total",0);
 
 
-        callQuiz();
+        point.setText(String.valueOf(stock));
+
 
         finish.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,7 +57,8 @@ public class TotalActivity extends AppCompatActivity {
         ulang.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                android.os.Process.killProcess(android.os.Process.myPid());
+               Intent intent = new Intent(TotalActivity.this, MainActivity.class);
+               startActivity(intent);
 
             }
         });
@@ -64,67 +66,6 @@ public class TotalActivity extends AppCompatActivity {
     }
 
 
-    APIInterfacesRest apiInterface;
-    ProgressDialog progressDialog;
-
-    public void callQuiz() {
-
-        apiInterface = APIClient.getClient().create(APIInterfacesRest.class);
-        progressDialog = new ProgressDialog(TotalActivity.this);
-        progressDialog.setTitle("Loading");
-        progressDialog.show();
-        Call<QuizModel> call3 = apiInterface.getGame();
-        call3.enqueue(new Callback<QuizModel>() {
-            @Override
-            public void onResponse(Call<QuizModel> call, Response<QuizModel> response) {
-                progressDialog.dismiss();
-                QuizModel data = response.body();
-                //Toast.makeText(LoginActivity.this,userList.getToken().toString(),Toast.LENGTH_LONG).show();
-                if (data != null) {
-
-
-                    Integer poin = 0;
-                    Integer nilai = 0;
-
-                    for (int x = 0; x < data.getData().getSoalQuizAndroid().size(); x++) {
-
-                        ArrayList<String> hope = new ArrayList<String>(3);
-                        hope.add("4");
-                        hope.add("1");
-                        hope.add("1");
-
-                        if (stock.get(x).equalsIgnoreCase(hope.get(x))) {
-                            poin = Integer.parseInt(data.getData().getSoalQuizAndroid().get(x).getPoint());
-                            nilai += poin;
-                        }
-
-
-                        point.setText(String.valueOf(nilai));
-
-                    }
-
-                } else {
-
-                    try {
-                        JSONObject jObjError = new JSONObject(response.errorBody().string());
-                        Toast.makeText(TotalActivity.this, jObjError.getString("message"), Toast.LENGTH_LONG).show();
-                    } catch (Exception e) {
-                        Toast.makeText(TotalActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<QuizModel> call, Throwable t) {
-                progressDialog.dismiss();
-                Toast.makeText(getApplicationContext(), "Maaf koneksi bermasalah", Toast.LENGTH_LONG).show();
-                call.cancel();
-            }
-        });
-
-
-    }
 
 }
 

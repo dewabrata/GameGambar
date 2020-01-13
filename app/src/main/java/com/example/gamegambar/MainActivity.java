@@ -35,8 +35,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     RadioGroup radioGroup;
     Button ba,bi,bu,be;
     int x = 0;
+    int totalSemua =0;
 
-    ArrayList<String> total = new ArrayList<>();
+    List<String> jawaban;
+
+
 
     List<SoalQuizAndroid> listQuiz ;
 
@@ -86,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //Toast.makeText(LoginActivity.this,userList.getToken().toString(),Toast.LENGTH_LONG).show();
                 if (data !=null) {
 
+                    jawaban = new ArrayList<String>();
                     listQuiz = data.getData().getSoalQuizAndroid();
 
                     runGame();
@@ -150,16 +154,64 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         x++;
-       total.add(String.valueOf(v.getId()));
-       Toast.makeText(MainActivity.this, String.valueOf(total), Toast.LENGTH_LONG).show();
+
+       switch (v.getId()){
+           case 1 : jawaban.add("a");
+                    break;
+           case 2 : jawaban.add("b");
+               break;
+           case 3 : jawaban.add("c");
+               break;
+           case 4 : jawaban.add("d");
+               break;
+
+
+
+       }
+
+
+
+
+
+
         runGame();
         if (x == listQuiz.size()) {
 
+            totalSemua += totalNilai();
+
 
             Intent i = new Intent(MainActivity.this, TotalActivity.class);
-            i.putStringArrayListExtra("total",total );
+
+            i.putExtra("total",totalSemua);
+
             startActivity(i);
             finish();
         }
+
+
     }
+
+
+
+    public int totalNilai (){
+
+        int total =0 ;
+
+        for (int i =0 ; i < listQuiz.size();i++){
+
+            if(listQuiz.get(i).getJawaban().equalsIgnoreCase(jawaban.get(i))){
+
+                total += Integer.parseInt(listQuiz.get(i).getPoint());
+
+
+            }
+
+
+        }
+
+
+        return total;
+    }
+
+
 }
